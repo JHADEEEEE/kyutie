@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cute Bunny Page</title>
   <style>
     body {
@@ -12,8 +13,9 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      min-height: 100vh;
       overflow: hidden;
+      padding: 10px;
     }
 
     .message-box, .popup-message {
@@ -24,9 +26,10 @@
       background: #fff0f5;
       border: 3px dashed #ffb6c1;
       padding: 20px;
-      width: 320px;
-      max-height: 400px; /* Set max height */
-      overflow-y: auto; /* Enable vertical scrolling */
+      width: 90%;
+      max-width: 320px;
+      max-height: 80vh;
+      overflow-y: auto;
       box-shadow: 0 0 20px rgba(255, 182, 193, 0.5);
       border-radius: 20px;
       text-align: center;
@@ -66,8 +69,11 @@
 
     .box-container {
       display: flex;
+      flex-wrap: wrap;
       gap: 20px;
+      justify-content: center;
       z-index: 1;
+      margin-top: 20px;
     }
 
     .cute-box {
@@ -120,6 +126,7 @@
       cursor: pointer;
       transition: transform 0.2s ease, background 0.3s ease;
       box-shadow: 0 4px 10px rgba(255, 105, 180, 0.5);
+      margin-top: 15px;
     }
 
     .continue-btn:hover {
@@ -135,6 +142,21 @@
       100% {
         transform: scale(1) translate(-50%, -50%);
         opacity: 1;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .cute-box {
+        width: 120px;
+        height: 120px;
+      }
+
+      .msg {
+        font-size: 16px;
+      }
+
+      .bunny-gif {
+        width: 80px;
       }
     }
   </style>
@@ -200,13 +222,12 @@
         message = "Opening a special page for you... 💗";
       }
 
-      // Only animate text for Box 1
       if (boxNum === 1) {
         animateText(message);
         msgBox.style.display = "block";
         overlay.style.display = "block";
       } else {
-        msgText.innerHTML = message; // Directly show message for other boxes
+        msgText.innerHTML = message;
         msgBox.style.display = "block";
         overlay.style.display = "block";
       }
@@ -214,7 +235,7 @@
 
     function animateText(message) {
       const msgText = document.getElementById("messageText");
-      msgText.innerHTML = ""; // Clear previous text
+      msgText.innerHTML = "";
       const words = message.split(" ");
       let index = 0;
 
@@ -225,7 +246,7 @@
         } else {
           clearInterval(interval);
         }
-      }, 300); // Adjust the speed of the animation here
+      }, 300);
     }
 
     function handleContinue() {
@@ -238,11 +259,11 @@
 
       if (currentBox === 2) {
         document.getElementById("box3").classList.remove("locked");
-        window.open("page2.html", "_blank"); // <-- Opens in new tab
+        window.open("page2.html", "_blank");
       }
 
       if (currentBox === 3) {
-        window.open("page3.html", "_blank"); // <-- Opens in new tab
+        window.open("page3.html", "_blank");
       }
     }
   </script>
