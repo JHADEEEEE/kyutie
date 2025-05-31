@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UTOT</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: url('https://i.pinimg.com/originals/b9/1f/82/b91f82160034017f21ac3574705e1ed6.gif') no-repeat center center fixed;
+      background-size: cover;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    .container {
+      background: rgba(255, 240, 250, 0.95);
+      padding: 2rem;
+      border-radius: 1.5rem;
+      text-align: center;
+      box-shadow: 0 0 30px pink;
+      max-width: 90%;
+      width: 350px;
+    }
+
+    h2 {
+      color: #ff69b4;
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+    }
+
+    input {
+      width: 100%;
+      height: 45px;
+      font-size: 1.2rem;
+      text-align: center;
+      border-radius: 0.8rem;
+      border: 2px solid #ffb6c1;
+      background: #fff0fa;
+      margin-bottom: 1.5rem;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8rem;
+    }
+
+    button {
+      padding: 0.8rem;
+      font-size: 1.1rem;
+      background-color: #ffb6c1;
+      color: white;
+      border: none;
+      border-radius: 1rem;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #ff69b4;
+    }
+
+    #bunny {
+      width: 100px;
+      cursor: pointer;
+      position: absolute;
+      transition: all 0.4s ease;
+    }
+
+    .messagebox {
+      position: fixed;
+      top: 25%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 300px;
+      background: #fff0f5;
+      border: 3px solid #ff69b4;
+      border-radius: 1rem;
+      box-shadow: 0 0 20px #ffb6c1;
+      padding: 1.2rem;
+      z-index: 999;
+      display: none;
+      animation: pop 0.4s ease;
+      text-align: center;
+    }
+
+    .messagebox .close-btn {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-weight: bold;
+      font-size: 20px;
+      color: #ff1493;
+      cursor: pointer;
+    }
+
+    #errorBox {
+      top: 55%;
+      background: #fff5f8;
+      border: 3px dashed #ff69b4;
+      color: #ff1493;
+      font-size: 1rem;
+      font-weight: bold;
+    }
+
+    @keyframes pop {
+      0% {
+        transform: scale(0.8) translateX(-50%);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1) translateX(-50%);
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 500px) {
+      h2 {
+        font-size: 1.4rem;
+      }
+
+      button {
+        font-size: 1rem;
+        padding: 0.6rem;
+      }
+
+      #bunny {
+        width: 80px;
+      }
+    }
+  </style>
+</head>
+<body oncontextmenu="return false">
+  <div class="container">
+    <h2>🐇 Enter Bunny Code</h2>
+    <input type="password" id="pinDisplay" disabled placeholder="4-digit code" />
+    <div class="buttons">
+      <button onclick="press('1')">1</button>
+      <button onclick="press('2')">2</button>
+      <button onclick="press('3')">3</button>
+      <button onclick="press('4')">4</button>
+      <button onclick="press('5')">5</button>
+      <button onclick="press('6')">6</button>
+      <button onclick="press('7')">7</button>
+      <button onclick="press('8')">8</button>
+      <button onclick="press('9')">9</button>
+      <button onclick="clearPin()">C</button>
+      <button onclick="press('0')">0</button>
+      <button onclick="checkPin()">⏎</button>
+    </div>
+  </div>
+
+  <img id="bunny" src="https://i.pinimg.com/originals/01/c3/21/01c32151562a34035c5d3030a6ed3826.gif" alt="Bunny" onclick="showClue()" style="top: 10%; left: 10%;" />
+
+  <div class="messagebox" id="messageBox">
+    <span class="close-btn" onclick="closeBox()">×</span>
+    <div id="clueText">💡 Clue 1: Something important happened in a bunny’s life.</div>
+  </div>
+
+  <div class="messagebox" id="errorBox">
+    <span class="close-btn" onclick="closeError()">×</span>
+    <div id="errorText">🐰 Wrong code!</div>
+  </div>
+
+  <div class="messagebox" id="successBox" style="top: 35%;">
+    <span class="close-btn" onclick="goToHome()">×</span>
+    <div id="successText">
+      🐰 Yay! You got it right!<br>
+      You must be a genius bunny 💖<br><br>
+      <button onclick="goToHome()" style="padding: 0.5rem 1rem; border: none; background-color: #ff69b4; color: white; border-radius: 1rem; cursor: pointer;">OK</button>
+    </div>
+  </div>
+
+  <script>
+    let pin = "";
+    let clueStep = 0;
+
+    const clues = [
+      "💡 Clue 1: Something important happened in a bunny’s life.",
+      "💡 Clue 2: The code ends with a loop closed.",
+      "💡 Clue 3: It starts like a new century.",
+      "💡 Clue 4: 🐾 A round and a zero in the middle."
+    ];
+
+    function press(num) {
+      if (pin.length < 4) {
+        pin += num;
+        document.getElementById("pinDisplay").value = "*".repeat(pin.length);
+      }
+    }
+
+    function clearPin() {
+      pin = "";
+      document.getElementById("pinDisplay").value = "";
+    }
+
+    function checkPin() {
+      const correct = atob("MjAwNQ==");
+      if (pin === correct) {
+        document.getElementById("successBox").style.display = "block";
+      } else {
+        showError("🐰 Oopsie! That's not the right code! Try again, cutie!");
+        clearPin();
+      }
+    }
+
+    function showClue() {
+      const x = Math.floor(Math.random() * 70) + 10;
+      const y = Math.floor(Math.random() * 70) + 10;
+      const bunny = document.getElementById("bunny");
+      bunny.style.left = x + "%";
+      bunny.style.top = y + "%";
+
+      document.getElementById("messageBox").style.display = "block";
+      document.getElementById("clueText").innerText = clues[clueStep];
+      if (clueStep < clues.length - 1) clueStep++;
+    }
+
+    function closeBox() {
+      document.getElementById("messageBox").style.display = "none";
+    }
+
+    function showError(msg) {
+      const errorBox = document.getElementById("errorBox");
+      document.getElementById("errorText").innerText = msg;
+      errorBox.style.display = "block";
+    }
+
+    function closeError() {
+      document.getElementById("errorBox").style.display = "none";
+    }
+
+    function goToHome() {
+      window.location.href = "HOME.html";
+    }
+
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', function(e) {
+      if (
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && ['i', 'j', 'c'].includes(e.key.toLowerCase())) ||
+        (e.ctrlKey && e.key.toLowerCase() === 'u')
+      ) {
+        e.preventDefault();
+        return false;
+      }
+    });
+    document.addEventListener('dragstart', e => e.preventDefault());
+    document.addEventListener('selectstart', e => e.preventDefault());
+    document.addEventListener('copy', e => e.preventDefault());
+  </script>
+</body>
+</html>

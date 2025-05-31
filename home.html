@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cute Bunny Page</title>
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(to bottom right, #ffe6f0, #ffd6ec);
+      font-family: "Comic Sans MS", cursive, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .message-box, .popup-message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff0f5;
+      border: 3px dashed #ffb6c1;
+      padding: 20px;
+      width: 320px;
+      max-height: 400px; /* Set max height */
+      overflow-y: auto; /* Enable vertical scrolling */
+      box-shadow: 0 0 20px rgba(255, 182, 193, 0.5);
+      border-radius: 20px;
+      text-align: center;
+      z-index: 10;
+      animation: popIn 0.5s ease;
+    }
+
+    .popup-message {
+      display: none;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: #ffb6c1;
+      border: none;
+      border-radius: 50%;
+      color: white;
+      width: 25px;
+      height: 25px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .bunny-gif {
+      width: 100px;
+      height: auto;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .msg {
+      color: #ff69b4;
+      font-size: 18px;
+    }
+
+    .box-container {
+      display: flex;
+      gap: 20px;
+      z-index: 1;
+    }
+
+    .cute-box {
+      background: #fff0f5;
+      border: 3px dashed #ffb6c1;
+      border-radius: 20px;
+      width: 150px;
+      height: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(255, 192, 203, 0.5);
+      transition: transform 0.2s ease;
+    }
+
+    .locked {
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    .cute-box:hover {
+      transform: scale(1.05);
+    }
+
+    .cute-box img {
+      width: 60px;
+      height: auto;
+      margin-bottom: 10px;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 182, 193, 0.3);
+      z-index: 9;
+      display: none;
+    }
+
+    .continue-btn {
+      background: linear-gradient(to right, #ff69b4, #ffb6c1);
+      border: none;
+      border-radius: 15px;
+      color: white;
+      font-size: 16px;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.3s ease;
+      box-shadow: 0 4px 10px rgba(255, 105, 180, 0.5);
+    }
+
+    .continue-btn:hover {
+      transform: scale(1.05);
+      background: linear-gradient(to right, #ffb6c1, #ff69b4);
+    }
+
+    @keyframes popIn {
+      0% {
+        transform: scale(0.8) translate(-50%, -50%);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1) translate(-50%, -50%);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Welcome Popup -->
+  <div id="welcome-box" class="message-box">
+    <button class="close-btn" onclick="closeWelcome()">✖</button>
+    <img src="https://media3.giphy.com/media/pPVPwbNZHLG8UBBxZj/giphy.gif" alt="Cute Bunny" class="bunny-gif" />
+    <div class="msg">Welcome my love! Click on the boxes to unlock surprises!</div>
+  </div>
+
+  <!-- Boxes -->
+  <div class="box-container">
+    <div class="cute-box" onclick="unlockBox(1)">
+      <img src="https://cdn.pixabay.com/animation/2024/09/02/01/05/01-05-18-493_512.gif" alt="Bunny" />
+      <span>Lovieeeeee</span>
+    </div>
+    <div id="box2" class="cute-box locked" onclick="unlockBox(2)">
+      <img src="https://i.pinimg.com/originals/36/a2/01/36a201c8668f7e0a63dd7e3ec000ea86.gif" alt="Bunny" />
+      <span>Secret hehe</span>
+    </div>
+    <div id="box3" class="cute-box locked" onclick="unlockBox(3)">
+      <img src="https://i.pinimg.com/originals/31/5b/9e/315b9e7c0c35470fec2acfd46db99f0a.gif" alt="Bunny" />
+      <span>labyu</span>
+    </div>
+  </div>
+
+  <!-- Overlay & Popup Message -->
+  <div class="overlay" id="overlay"></div>
+  <div class="popup-message" id="messageBox">
+    <div id="messageText"></div>
+    <button class="continue-btn" onclick="handleContinue()">Continue</button>
+  </div>
+
+  <audio id="closeSound" loop src="palagi.mp3"></audio>
+
+  <script>
+    let currentBox = 0;
+
+    window.onload = function () {
+      document.getElementById("welcome-box").style.display = "block";
+    };
+
+    function closeWelcome() {
+      document.getElementById("welcome-box").style.display = "none";
+      document.getElementById("closeSound").play();
+    }
+
+    function unlockBox(boxNum) {
+      currentBox = boxNum;
+      const msgBox = document.getElementById("messageBox");
+      const overlay = document.getElementById("overlay");
+      const msgText = document.getElementById("messageText");
+
+      let message = "";
+      if (boxNum === 1) {
+        message = "Hello, my love,\n\nWe’ve been together for 4 months and 14 days — a total of 144 beautiful days. However, even before that, when we first started talking nearly 7 months ago, I sensed that something special was beginning.\n\nI want you to know that I have always loved you. No matter what happens — whether we have fights, arguments, or moments when we consider giving up — my heart always chooses you, every time.\n\nWhen I’m at my lowest, you are the one who lifts me up, comforts me, and stands by my side. I am incredibly grateful for every little thing you do. Meeting you has been the greatest blessing of my life.\n\nI love you more than words can express, and I hope you feel that love in this simple website I made just for you.\n\nNo matter what challenges come our way, remember this: I will always choose you, because you are my “Palagi” — my forever.\n\nI love you, always and forever.💕";
+      } else if (boxNum === 2) {
+        message = "You unlocked Box 3 and a new page is opening! 💖";
+      } else if (boxNum === 3) {
+        message = "Opening a special page for you... 💗";
+      }
+
+      // Only animate text for Box 1
+      if (boxNum === 1) {
+        animateText(message);
+        msgBox.style.display = "block";
+        overlay.style.display = "block";
+      } else {
+        msgText.innerHTML = message; // Directly show message for other boxes
+        msgBox.style.display = "block";
+        overlay.style.display = "block";
+      }
+    }
+
+    function animateText(message) {
+      const msgText = document.getElementById("messageText");
+      msgText.innerHTML = ""; // Clear previous text
+      const words = message.split(" ");
+      let index = 0;
+
+      const interval = setInterval(() => {
+        if (index < words.length) {
+          msgText.innerHTML += words[index] + " ";
+          index++;
+        } else {
+          clearInterval(interval);
+        }
+      }, 300); // Adjust the speed of the animation here
+    }
+
+    function handleContinue() {
+      document.getElementById("messageBox").style.display = "none";
+      document.getElementById("overlay").style.display = "none";
+
+      if (currentBox === 1) {
+        document.getElementById("box2").classList.remove("locked");
+      }
+
+      if (currentBox === 2) {
+        document.getElementById("box3").classList.remove("locked");
+        window.open("page2.html", "_blank"); // <-- Opens in new tab
+      }
+
+      if (currentBox === 3) {
+        window.open("page3.html", "_blank"); // <-- Opens in new tab
+      }
+    }
+  </script>
+</body>
+</html>
