@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>sheesh</title>
   <style>
     body {
@@ -45,6 +45,20 @@
       position: absolute;
       top: 10px;
       right: 15px;
+      background: #ffb6c1;
+      border: none;
+      border-radius: 50%;
+      color: white;
+      width: 25px;
+      height: 25px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .info-btn {
+      position: absolute;
+      top: 10px;
+      left: 15px;
       background: #ffb6c1;
       border: none;
       border-radius: 50%;
@@ -116,7 +130,7 @@
       display: none;
     }
 
-    .continue-btn {
+    .continue-btn, .skip-btn {
       background: linear-gradient(to right, #ff69b4, #ffb6c1);
       border: none;
       border-radius: 15px;
@@ -126,10 +140,10 @@
       cursor: pointer;
       transition: transform 0.2s ease, background 0.3s ease;
       box-shadow: 0 4px 10px rgba(255, 105, 180, 0.5);
-      margin-top: 15px;
+      margin: 10px 5px 0 5px;
     }
 
-    .continue-btn:hover {
+    .continue-btn:hover, .skip-btn:hover {
       transform: scale(1.05);
       background: linear-gradient(to right, #ffb6c1, #ff69b4);
     }
@@ -189,14 +203,20 @@
   <!-- Overlay & Popup Message -->
   <div class="overlay" id="overlay"></div>
   <div class="popup-message" id="messageBox">
+    <button class="info-btn" onclick="showInfo()">?</button>
     <div id="messageText"></div>
-    <button class="continue-btn" onclick="handleContinue()">Continue</button>
+    <div id="buttonGroup">
+      <button class="continue-btn" onclick="handleContinue()">Continue</button>
+      <button class="skip-btn" id="skipBtn" onclick="skipMessage()" style="display:none;">Skip</button>
+    </div>
   </div>
 
   <audio id="closeSound" loop src="palagi.mp3"></audio>
 
   <script>
     let currentBox = 0;
+    let fullMessage = "";
+    let animationInterval;
 
     window.onload = function () {
       document.getElementById("welcome-box").style.display = "block";
@@ -207,30 +227,48 @@
       document.getElementById("closeSound").play();
     }
 
+    function showInfo() {
+      alert("click muna ang skip bago mag continue, nag bubug kaya hahaha");
+    }
+
     function unlockBox(boxNum) {
       currentBox = boxNum;
       const msgBox = document.getElementById("messageBox");
       const overlay = document.getElementById("overlay");
       const msgText = document.getElementById("messageText");
+      const skipBtn = document.getElementById("skipBtn");
 
-      let message = "";
+      if (animationInterval) clearInterval(animationInterval);
+      msgText.innerHTML = "";
+
       if (boxNum === 1) {
-        message = "Hello, my love,\n\nWe’ve been together for 4 months and 14 days — a total of 144 beautiful days. However, even before that, when we first started talking nearly 7 months ago, I sensed that something special was beginning.\n\nI want you to know that I have always loved you. No matter what happens — whether we have fights, arguments, or moments when we consider giving up — my heart always chooses you, every time.\n\nWhen I’m at my lowest, you are the one who lifts me up, comforts me, and stands by my side. I am incredibly grateful for every little thing you do. Meeting you has been the greatest blessing of my life.\n\nI love you more than words can express, and I hope you feel that love in this simple website I made just for you.\n\nNo matter what challenges come our way, remember this: I will always choose you, because you are my “Palagi” — my forever.\n\nI love you, always and forever.💕";
+        fullMessage = `Hello, my love,
+
+We’ve been together for 4 months and 14 days — a total of 144 beautiful days. However, even before that, when we first started talking nearly 7 months ago, I sensed that something special was beginning.
+
+I want you to know that I have always loved you. No matter what happens — whether we have fights, arguments, or moments when we consider giving up — my heart always chooses you, every time.
+
+When I’m at my lowest, you are the one who lifts me up, comforts me, and stands by my side. I am incredibly grateful for every little thing you do. Meeting you has been the greatest blessing of my life.
+
+I love you more than words can express, and I hope you feel that love in this simple website I made just for you.
+
+No matter what challenges come our way, remember this: I will always choose you, because you are my “Palagi” — my forever.
+
+I love you, always and forever.💕`;
+        animateText(fullMessage);
+        skipBtn.style.display = "inline-block";
       } else if (boxNum === 2) {
-        message = "SANA MA GUSTOHAN MO ╥‸╥";
+        fullMessage = "SANA MA GUSTOHAN MO ╥‸╥";
+        msgText.innerHTML = fullMessage;
+        skipBtn.style.display = "none";
       } else if (boxNum === 3) {
-        message = "mayo pa hahaha";
+        fullMessage = "mayo pa hahaha";
+        msgText.innerHTML = fullMessage;
+        skipBtn.style.display = "none";
       }
 
-      if (boxNum === 1) {
-        animateText(message);
-        msgBox.style.display = "block";
-        overlay.style.display = "block";
-      } else {
-        msgText.innerHTML = message;
-        msgBox.style.display = "block";
-        overlay.style.display = "block";
-      }
+      msgBox.style.display = "block";
+      overlay.style.display = "block";
     }
 
     function animateText(message) {
@@ -239,14 +277,19 @@
       const words = message.split(" ");
       let index = 0;
 
-      const interval = setInterval(() => {
+      animationInterval = setInterval(() => {
         if (index < words.length) {
           msgText.innerHTML += words[index] + " ";
           index++;
         } else {
-          clearInterval(interval);
+          clearInterval(animationInterval);
         }
       }, 300);
+    }
+
+    function skipMessage() {
+      if (animationInterval) clearInterval(animationInterval);
+      document.getElementById("messageText").innerText = fullMessage;
     }
 
     function handleContinue() {
